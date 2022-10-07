@@ -3,15 +3,23 @@ var app = express();
 var http = require('http');
 var server = http.createServer(app);
 var Server = require('socket.io').Server;
-var socket = new Server(server);
+var socket = new Server(server, {
+    cors: {
+        origin: '*',
+    }
+});
 app.get('/', function (req, res) {
     res.send('Hello! It is WS server');
 });
-socket.on('connection', function (connection) {
-    connection.on('client-message-sent', function (message) {
+var messages = [
+    { message: 'Hello', id: '123456', user: { id: '555', name: 'Kate' } },
+    { message: 'Hi', id: '789101', user: { id: '333', name: 'Alice' } }
+];
+socket.on('connection', function (socketClient) {
+    console.log('a user connected');
+    socketClient.on('client-message-sent', function (message) {
         console.log(message);
     });
-    console.log('a user connected');
 });
 var PORT = process.env.PORT || 3009;
 server.listen(PORT, function () {
