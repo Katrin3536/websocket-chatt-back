@@ -2,12 +2,15 @@ var express = require('express');
 var app = express();
 var http = require('http');
 var server = http.createServer(app);
-var Server = require("socket.io").Server;
+var Server = require('socket.io').Server;
 var socket = new Server(server);
 app.get('/', function (req, res) {
-    res.send("Hello! It is WS server");
+    res.send('Hello! It is WS server');
 });
 socket.on('connection', function (connection) {
+    connection.on('client-message-sent', function (message) {
+        console.log(message);
+    });
     console.log('a user connected');
 });
 var PORT = process.env.PORT || 3009;
