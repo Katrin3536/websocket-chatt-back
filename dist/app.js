@@ -19,7 +19,9 @@ var messages = [
 socket.on('connection', function (socketClient) {
     console.log('a user connected');
     socketClient.on('client-message-sent', function (message) {
-        console.log(message);
+        var messageItem = { message: message, id: '785681' + new Date().getTime(), user: { id: '111', name: 'Kit' } };
+        messages.push(messageItem);
+        socket.emit('new-message-sent', messageItem);
     });
     socketClient.emit('init-messages-published', messages);
 });
