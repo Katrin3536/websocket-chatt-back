@@ -15,7 +15,9 @@ app.get('/', (req, res) => {
 
 const messages = [
     {message: 'Hello', id: '123456', user: {id: '555', name: 'Kate'}},
-    {message: 'Hi', id: '789101', user: {id: '333', name: 'Alice'}}
+    {message: 'Hi', id: '789101', user: {id: '333', name: 'Alice'}},
+    {message: 'Yo', id: '785681', user: {id: '111', name: 'Lana'}}
+
 ];
 
 socket.on('connection', (socketClient) => {
@@ -23,6 +25,7 @@ socket.on('connection', (socketClient) => {
     socketClient.on('client-message-sent', (message: string) => {
         console.log(message);
     });
+    socketClient.emit('init-messages-published', messages);
 
 });
 

@@ -13,13 +13,15 @@ app.get('/', function (req, res) {
 });
 var messages = [
     { message: 'Hello', id: '123456', user: { id: '555', name: 'Kate' } },
-    { message: 'Hi', id: '789101', user: { id: '333', name: 'Alice' } }
+    { message: 'Hi', id: '789101', user: { id: '333', name: 'Alice' } },
+    { message: 'Yo', id: '785681', user: { id: '111', name: 'Lana' } }
 ];
 socket.on('connection', function (socketClient) {
     console.log('a user connected');
     socketClient.on('client-message-sent', function (message) {
         console.log(message);
     });
+    socketClient.emit('init-messages-published', messages);
 });
 var PORT = process.env.PORT || 3009;
 server.listen(PORT, function () {
