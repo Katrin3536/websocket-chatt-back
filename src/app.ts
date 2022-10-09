@@ -8,6 +8,7 @@ const socket = new Server(server, {
         origin: '*',
     }
 });
+import {v1} from 'uuid';
 
 app.get('/', (req, res) => {
     res.send('Hello! It is WS server');
@@ -23,10 +24,14 @@ const messages = [
 socket.on('connection', (socketClient) => {
     console.log('a user connected');
     socketClient.on('client-message-sent', (message: string) => {
-        let messageItem = {message: message, id: '785681'+ new Date().getTime(), user: {id: '111', name: 'Kit'}};
+        if (typeof message !== 'string') {
+            return;
+        }
+        let messageItem = {message: message, id: v1(), user: {id: '111', name: 'Kit'}};
         messages.push(messageItem);
-        socket.emit('new-message-sent', messageItem)
+        socket.emit('new-message-sent', messageItem);
     });
+
     socketClient.emit('init-messages-published', messages);
 
 });

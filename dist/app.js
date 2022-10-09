@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
 var app = express();
 var http = require('http');
@@ -8,6 +10,7 @@ var socket = new Server(server, {
         origin: '*',
     }
 });
+var uuid_1 = require("uuid");
 app.get('/', function (req, res) {
     res.send('Hello! It is WS server');
 });
@@ -19,7 +22,10 @@ var messages = [
 socket.on('connection', function (socketClient) {
     console.log('a user connected');
     socketClient.on('client-message-sent', function (message) {
-        var messageItem = { message: message, id: '785681' + new Date().getTime(), user: { id: '111', name: 'Kit' } };
+        if (typeof message !== 'string') {
+            return;
+        }
+        var messageItem = { message: message, id: (0, uuid_1.v1)(), user: { id: '111', name: 'Kit' } };
         messages.push(messageItem);
         socket.emit('new-message-sent', messageItem);
     });
