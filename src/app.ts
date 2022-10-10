@@ -34,6 +34,10 @@ socket.on('connection', (socketChannel) => {
         user.name = name;
     });
 
+    socketChannel.on('client-typing', (name: string) => {
+        socketChannel.emit('user-typing', users.get(socketChannel));
+    });
+
     socketChannel.on('client-message-sent', (message: string) => {
         if (typeof message !== 'string') {
             return;

@@ -29,6 +29,9 @@ socket.on('connection', function (socketChannel) {
         var user = users.get(socketChannel);
         user.name = name;
     });
+    socketChannel.on('client-typing', function (name) {
+        socketChannel.emit('user-typing', users.get(socketChannel));
+    });
     socketChannel.on('client-message-sent', function (message) {
         if (typeof message !== 'string') {
             return;
