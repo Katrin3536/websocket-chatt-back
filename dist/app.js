@@ -14,22 +14,31 @@ var uuid_1 = require("uuid");
 app.get('/', function (req, res) {
     res.send('Hello! It is WS server');
 });
+var users = new Map();
 var messages = [
     { message: 'Hello', id: '123456', user: { id: '555', name: 'Kate' } },
     { message: 'Hi', id: '789101', user: { id: '333', name: 'Alice' } },
     { message: 'Yo', id: '785681', user: { id: '111', name: 'Lana' } }
 ];
-socket.on('connection', function (socketClient) {
-    console.log('a user connected');
-    socketClient.on('client-message-sent', function (message) {
+socket.on('connection', function (socketChannel) {
+    users.set(socketChannel, { id: (0, uuid_1.v1)(), name: 'anonym' });
+    socket.on('disconnect', function () {
+        users.delete(socketChannel);
+    });
+    socketChannel.on('client-name-sent', function (name) {
+        var user = users.get(socketChannel);
+        user.name = name;
+    });
+    socketChannel.on('client-message-sent', function (message) {
         if (typeof message !== 'string') {
             return;
         }
-        var messageItem = { message: message, id: (0, uuid_1.v1)(), user: { id: '111', name: 'Kit' } };
+        var user = users.get(socketChannel);
+        var messageItem = { message: message, id: (0, uuid_1.v1)(), user: { id: user.id, name: user.name } };
         messages.push(messageItem);
         socket.emit('new-message-sent', messageItem);
     });
-    socketClient.emit('init-messages-published', messages);
+    socketChannel.emit('init-messages-published', messages);
 });
 var PORT = process.env.PORT || 3009;
 server.listen(PORT, function () {

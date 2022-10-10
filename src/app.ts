@@ -14,6 +14,8 @@ app.get('/', (req, res) => {
     res.send('Hello! It is WS server');
 });
 
+const users = new Map();
+
 const messages = [
     {message: 'Hello', id: '123456', user: {id: '555', name: 'Kate'}},
     {message: 'Hi', id: '789101', user: {id: '333', name: 'Alice'}},
@@ -21,18 +23,29 @@ const messages = [
 
 ];
 
-socket.on('connection', (socketClient) => {
-    console.log('a user connected');
-    socketClient.on('client-message-sent', (message: string) => {
+socket.on('connection', (socketChannel) => {
+    users.set(socketChannel, {id: v1(), name: 'anonym'});
+
+    socket.on('disconnect', ()=>{
+        users.delete(socketChannel)
+    } )
+    socketChannel.on('client-name-sent', (name: string) => {
+        const user = users.get(socketChannel);
+        user.name = name;
+    });
+
+    socketChannel.on('client-message-sent', (message: string) => {
         if (typeof message !== 'string') {
             return;
         }
-        let messageItem = {message: message, id: v1(), user: {id: '111', name: 'Kit'}};
+        const user = users.get(socketChannel);
+
+        let messageItem = {message: message, id: v1(), user: {id: user.id, name: user.name}};
         messages.push(messageItem);
         socket.emit('new-message-sent', messageItem);
     });
 
-    socketClient.emit('init-messages-published', messages);
+    socketChannel.emit('init-messages-published', messages);
 
 });
 
